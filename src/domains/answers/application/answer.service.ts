@@ -6,7 +6,7 @@ import { ExamSet } from '../../../entities/exam.set';
 import { Answer } from '../../../entities/answer';
 
 @Injectable()
-export class FileService {
+export class AnswerService {
   constructor(
     private readonly examSetRepository: ExamSetRepository,
     private readonly answerRepository: AnswerRepository,

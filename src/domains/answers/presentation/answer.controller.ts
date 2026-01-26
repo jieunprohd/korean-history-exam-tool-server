@@ -1,23 +1,19 @@
 import {
-  Body,
   Controller,
   Post,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { PdfFileInterceptor } from '../../../commons/interceptors/pdf.file.interceptor';
-import { FileService } from '../application/file.service';
+import { AnswerService } from '../application/answer.service';
 
 @Controller('files')
-export class FileController {
-  constructor(private readonly fileService: FileService) {}
+export class AnswerController {
+  constructor(private readonly fileService: AnswerService) {}
 
-  @Post('')
+  @Post()
   @UseInterceptors(PdfFileInterceptor)
-  public async analyzeAnswer(
-    @Body() request: any,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
+  public async analyzeAnswer(@UploadedFile() file: Express.Multer.File) {
     return await this.fileService.analyzeAnswersByPdf(file);
   }
 }

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { FileModule } from './domains/files/file.module';
+import { AnswerModule } from './domains/answers/answer.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
@@ -17,7 +17,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       synchronize: true,
       entities: [__dirname + '/src/entities/*.ts'],
     }),
-    FileModule,
+    AnswerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
