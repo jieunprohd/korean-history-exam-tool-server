@@ -1,36 +1,69 @@
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { pdf2array } from 'pdf2array';
+import { ExamSetRepository } from './exam.set.repository';
+import { AnswerRepository } from './answer.repository';
+import { ExamSet } from '../../../entities/exam.set';
+import { Answer } from '../../../entities/answer';
 
+@Injectable()
 export class FileService {
-  constructor() {}
+  constructor(
+    private readonly examSetRepository: ExamSetRepository,
+    private readonly answerRepository: AnswerRepository,
+  ) {}
 
   public async analyzeAnswersByPdf(file: Express.Multer.File) {
-    const stringParsedPdfData = await this.parsePdf(file);
-    return this.extractQuestions(stringParsedPdfData);
+    return await this.findExamSetOrElseCreate(file);
   }
 
-  private extractQuestions(data: string[][]) {
-    const questions = [];
+  private async findExamSetOrElseCreate(file: Express.Multer.File) {
+    const examSet = await this.examSetRepository.findByName(file.originalname);
 
+    if (!examSet) {
+      const newExamSet = new ExamSet();
+      newExamSet.name = file.originalname;
+
+      const savedExamSet = await this.examSetRepository.save(newExamSet);
+
+      return await this.getExtractedQuestions(file, savedExamSet);
+    }
+
+    return examSet;
+  }
+
+  private async getExtractedQuestions(
+    file: Express.Multer.File,
+    examSet: ExamSet,
+  ) {
+    const fileToTableString = await this.parsePdf(file);
+    return await this.extractQuestions(fileToTableString, examSet);
+  }
+
+  private async extractQuestions(data: string[][], examSet: ExamSet) {
     const questionRows = data.slice(4, 14);
 
     for (const row of questionRows) {
       for (let i = 0; i < row.length; i += 3) {
-        const number = Number(row[i]);
+        const questionNumber = Number(row[i]);
         const answer = row[i + 1];
         const score = Number(row[i + 2]);
 
-        if (!number || !answer || !score) continue;
+        if (!questionNumber || !answer || !score) {
+          throw new BadRequestException('정답지 추출 중 문제가 발생했습니다.');
+        }
 
-        questions.push({
-          questionNumber: number,
-          questionAnswer: this.answerToNumber(answer),
-          questionScore: score,
-        });
+        await this.answerRepository.save(
+          Answer.from(
+            examSet,
+            questionNumber,
+            this.answerToNumber(answer),
+            score,
+          ),
+        );
       }
     }
 
-    return { questions };
+    return await this.answerRepository.findByExamSet(examSet);
   }
 
   private answerToNumber(answer: string): number {
