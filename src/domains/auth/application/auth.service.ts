@@ -1,10 +1,15 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserRequest } from './dto/create.user.request';
 import { UserRepository } from './user.repository';
 import * as bcrypt from 'bcrypt';
 import { User } from '../../../entities/user';
 import { JwtService } from '@nestjs/jwt';
 import { AccessTokenPayload } from '../../answers/application/token.payload';
+import { LoginUserRequest } from './dto/login.user.request';
 
 @Injectable()
 export class AuthService {
@@ -25,6 +30,26 @@ export class AuthService {
 
     const accessToken = await this.createUserToken(existingUser);
     return accessToken; // TODO CommonResponse 형태 변경 필요
+  }
+
+  public async loginUser(request: LoginUserRequest) {
+    const user = await this.userRepository.findByEmail(request.email);
+
+    if (!user) {
+      throw new NotFoundException('해당 이메일의 사용자가 존재하지 않습니다.');
+    }
+
+    const isSamePassword = await bcrypt.compare(
+      request.password,
+      user.password,
+    );
+
+    if (!isSamePassword) {
+      throw new BadRequestException('비밀번호가 일치하지 않습니다.');
+    }
+
+    const accessToken = await this.createUserToken(user);
+    return accessToken;
   }
 
   private async createUserToken(user: User) {
