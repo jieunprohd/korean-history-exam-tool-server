@@ -30,6 +30,7 @@
     "openai": "^6.16.0",
     "pdf-lib": "^1.17.1",
     "pdf-parse-new": "^2.0.0",
+    "pdf2array": "^0.0.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2"
   },
