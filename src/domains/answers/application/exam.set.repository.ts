@@ -17,7 +17,20 @@ export class ExamSetRepository {
     });
   }
 
+  public async findById(id: number) {
+    return await this.repo.findOne({
+      where: { id },
+      relations: ['answers'],
+    });
+  }
+
   public async save(examSet: ExamSet) {
     return await this.repo.save(examSet);
+  }
+
+  public async findAll() {
+    return await this.repo.find({
+      order: { name: 'ASC' },
+    });
   }
 }

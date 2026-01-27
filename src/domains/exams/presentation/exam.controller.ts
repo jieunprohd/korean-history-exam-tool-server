@@ -1,18 +1,19 @@
-import { Controller, Get, Post, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Param, Post, UseInterceptors } from '@nestjs/common';
 import { PdfFileInterceptor } from '../../../commons/interceptors/pdf.file.interceptor';
+import { ExamService } from '../application/exam.service';
 
 @Controller('exams')
 export class ExamController {
-  constructor() {}
+  constructor(private readonly examService: ExamService) {}
 
   @Get()
   public async getAllExams() {
-    // 전체 시험 정보 조회
+    return await this.examService.findAllExamSets();
   }
 
   @Get('/:examId')
-  public async getExamById() {
-    // 특정 시험 조회
+  public async getExamById(@Param('examId') examId: number) {
+    return await this.examService.findExamSetById(examId);
   }
 
   @Post()

@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './domains/auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './commons/guard/jwt.auth.guard';
+import { ExamModule } from './domains/exams/exam.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { JwtAuthGuard } from './commons/guard/jwt.auth.guard';
     }),
     AnswerModule,
     AuthModule,
+    ExamModule,
   ],
   controllers: [AppController],
   providers: [

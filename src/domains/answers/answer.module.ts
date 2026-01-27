@@ -12,6 +12,6 @@ import { AuthModule } from '../auth/auth.module';
   imports: [TypeOrmModule.forFeature([ExamSet, Answer]), AuthModule],
   controllers: [AnswerController],
   providers: [AnswerService, ExamSetRepository, AnswerRepository],
-  exports: [AnswerService],
+  exports: [AnswerService, ExamSetRepository, AnswerRepository],
 })
 export class AnswerModule {}
