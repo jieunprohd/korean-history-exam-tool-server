@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Answer } from './answer';
+import { UserExam } from './user.exam';
 
 @Entity({ name: 'EXAM_SETS' })
 export class ExamSet {
@@ -20,4 +21,7 @@ export class ExamSet {
 
   @OneToMany(() => Answer, (answer) => answer.examSet)
   answers: Answer[];
+
+  @OneToMany(() => UserExam, (userExam) => userExam.examSet)
+  userExams: UserExam[];
 }

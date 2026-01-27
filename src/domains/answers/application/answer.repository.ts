@@ -24,4 +24,16 @@ export class AnswerRepository {
   public async save(answer: Answer) {
     await this.repo.save(answer);
   }
+
+  public async findByExamSetAndQuestionNumber(
+    examSet: ExamSet,
+    questionNumber: number,
+  ) {
+    return await this.repo.findOne({
+      where: {
+        examSet,
+        questionNumber,
+      },
+    });
+  }
 }

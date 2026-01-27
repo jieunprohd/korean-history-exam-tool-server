@@ -1,24 +1,28 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../../../commons/guard/jwt.auth.guard';
+import { StartUserExamRequest } from '../application/dto/start.user.exam.request';
+import { UserExamService } from '../application/user.exam.service';
+import { AnswerQuestionRequest } from '../application/dto/answer.question.request';
 
 @Controller('user-exam')
 export class UserExamController {
-  constructor() {}
+  constructor(private readonly userExamService: UserExamService) {}
 
   @Post()
-  public async startUserExam() {
-    // 시험 시작 (examSet 생성)
-    // examSetId, userId (Bearer Token)
+  @UseGuards(JwtAuthGuard)
+  public async startUserExam(@Body() request: StartUserExamRequest) {
+    return await this.userExamService.startExam('', request); // TODO userId CurrentUser 변환 필요
   }
 
   @Post('/:userExamId/answer')
-  public async answerUserExam() {
-    // 각 항목별 정답 입력
-    // userExamId, userId (Bearer Token), questionNumber, answer
+  @UseGuards(JwtAuthGuard)
+  public async answerUserExam(@Body() request: AnswerQuestionRequest) {
+    return await this.userExamService.answerQuestion('', request); // TODO userId CurrentUser 변환 필요
   }
 
   @Get('/:userExamId')
-  public async getUserExamResult() {
-    // 시험 점수 확인
-    // userExamId, userId (Bearer Token)
+  @UseGuards(JwtAuthGuard)
+  public async getUserExamResult(@Body() request: AnswerQuestionRequest) {
+    return await this.userExamService.getUserExamResult('', request); // TODO userId CurrentUser 변환 필요
   }
 }

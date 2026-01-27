@@ -3,10 +3,12 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
 import { ExamSet } from './exam.set';
+import { UserAnswer } from './user.answer';
 
 @Entity({ name: 'ANSWERS' })
 @Unique('UQ_EXAM_QUESTION', ['examSet', 'questionNumber'])
@@ -30,6 +32,9 @@ export class Answer {
     onDelete: 'CASCADE',
   })
   examSet: ExamSet;
+
+  @OneToMany(() => UserAnswer, (userAnswer) => userAnswer.answer)
+  userAnswers: UserAnswer[];
 
   public static from(
     examSet: ExamSet,

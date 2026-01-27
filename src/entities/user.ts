@@ -2,9 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { CreateUserRequest } from '../domains/auth/application/dto/create.user.request';
+import { UserExam } from './user.exam';
 
 @Entity({ name: 'USER' })
 export class User {
@@ -22,6 +24,9 @@ export class User {
 
   @CreateDateColumn({ name: 'CREATED_AT' })
   createdAt: Date;
+
+  @OneToMany(() => UserExam, (userExam) => userExam.user)
+  userExams: UserExam[];
 
   public static from(
     createUserRequest: CreateUserRequest,
