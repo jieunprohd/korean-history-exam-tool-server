@@ -1,25 +1,27 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { CreateUserRequest } from '../application/dto/create.user.request';
 import { AuthService } from '../application/auth.service';
+import { LoginUserRequest } from '../application/dto/login.user.request';
+import { JwtAuthGuard } from '../../../commons/guard/jwt.auth.guard';
+import { Public } from '../../../commons/decorators/public.decorator';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Public()
   @Post('register')
   public async register(@Body() request: CreateUserRequest) {
     return await this.authService.createUser(request);
   }
 
+  @Public()
   @Post('login')
-  public async login() {
-    // 로그인
-    // email, password
+  public async login(@Body() request: LoginUserRequest) {
+    return await this.authService.loginUser(request);
   }
 
   @Get()
-  public async getUserByToken() {
-    // 유저 저옵 조회
-    // Bearer Token
-  }
+  @UseGuards(JwtAuthGuard)
+  public async getUserByToken() {}
 }

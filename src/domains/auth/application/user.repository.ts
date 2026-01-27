@@ -17,4 +17,8 @@ export class UserRepository {
   public async save(user: User) {
     return await this.repo.save(user);
   }
+
+  public async findByUserId(userId: string) {
+    return await this.repo.findOne({ where: { id: Number(userId) } });
+  }
 }

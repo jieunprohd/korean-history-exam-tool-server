@@ -3,6 +3,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AnswerModule } from './domains/answers/answer.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from './domains/auth/auth.module';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './commons/guard/jwt.auth.guard';
 
 @Module({
   imports: [
@@ -18,8 +21,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       entities: [__dirname + '/src/entities/*.ts'],
     }),
     AnswerModule,
+    AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+  ],
 })
 export class AppModule {}

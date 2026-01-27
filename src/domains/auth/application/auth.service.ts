@@ -26,9 +26,11 @@ export class AuthService {
     }
 
     const hashedPassword = await bcrypt.hash(request.password, 10);
-    await this.userRepository.save(User.from(request, hashedPassword));
+    const user = await this.userRepository.save(
+      User.from(request, hashedPassword),
+    );
 
-    const accessToken = await this.createUserToken(existingUser);
+    const accessToken = await this.createUserToken(user);
     return accessToken; // TODO CommonResponse 형태 변경 필요
   }
 
@@ -52,6 +54,16 @@ export class AuthService {
     return accessToken;
   }
 
+  public async findUserById(userId: string) {
+    const user = await this.userRepository.findByUserId(userId);
+
+    if (!user) {
+      throw new NotFoundException('해당 사용자가 존재하지 않습니다.');
+    }
+
+    return user;
+  }
+
   private async createUserToken(user: User) {
     const payload: AccessTokenPayload = {
       userId: user.id.toString(),
@@ -60,8 +72,8 @@ export class AuthService {
     };
 
     return this.jwtService.sign(payload, {
-      expiresIn: '1d', // TODO env 이동 필요
-      secret: '',
+      secret: 'secretKey',
+      expiresIn: '1h',
     });
   }
 }
