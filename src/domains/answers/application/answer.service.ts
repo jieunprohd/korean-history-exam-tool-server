@@ -7,6 +7,7 @@ import { Answer } from '../../../entities/answer';
 import { UserExam } from '../../../entities/user.exam';
 import { UserAnswerRepository } from './user.answer.repository';
 import { UserAnswer } from '../../../entities/user.answer';
+import { GetExamResultResponse } from './dto/get.exam.result.response';
 
 @Injectable()
 export class AnswerService {
@@ -24,18 +25,7 @@ export class AnswerService {
     const userAnswers =
       await this.userAnswerRepository.findByUserExam(userExam);
 
-    const totalScore = userAnswers
-      .map((userAnswer) => userAnswer.answer)
-      .reduce((a, c) => a + c.score, 0);
-
-    const userScore = userAnswers
-      .filter(
-        (userAnswer) => userAnswer.userAnswer === userAnswer.answer.answer,
-      )
-      .map((userAnswer) => userAnswer.answer)
-      .reduce((a, c) => a + c.score, 0);
-
-    return { totalScore, userScore };
+    return GetExamResultResponse.from(userAnswers);
   }
 
   public async getRightAnswersByUserExam(

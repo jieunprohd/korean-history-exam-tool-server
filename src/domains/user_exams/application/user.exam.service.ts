@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UserExamRepository } from './user.exam.repository';
 import { StartUserExamRequest } from './dto/start.user.exam.request';
 import { UserExam } from '../../../entities/user.exam';
@@ -7,6 +7,9 @@ import { GetUserExamResultRequest } from './dto/get.user.exam.result.request';
 import { AuthService } from '../../auth/application/auth.service';
 import { ExamService } from '../../exams/application/exam.service';
 import { AnswerService } from '../../answers/application/answer.service';
+import { CommonResponse } from '../../../commons/response/common.response';
+import { AnswerQuestionResponse } from './dto/answer.question.response';
+import { ResponseCode } from '../../../commons/constants/response.code';
 
 @Injectable()
 export class UserExamService {
@@ -26,7 +29,7 @@ export class UserExamService {
       UserExam.from(examSet, user),
     );
 
-    return userExam; // TODO 시작 성공 / 실패
+    return CommonResponse.of(userExam, true, ResponseCode.OK);
   }
 
   public async answerQuestion(userId: string, request: AnswerQuestionRequest) {
@@ -45,11 +48,11 @@ export class UserExamService {
       rightAnswer,
     );
 
-    if (rightAnswer.answer === request.answer) {
-      return '맞음'; // TODO 제대로 리턴해야함
-    }
-
-    return '틀림';
+    return CommonResponse.of(
+      AnswerQuestionResponse.from(request.answer, rightAnswer),
+      true,
+      ResponseCode.OK,
+    );
   }
 
   public async getUserExamResult(
@@ -60,19 +63,8 @@ export class UserExamService {
 
     const userExam = await this.findUserExamByIdOrElseThrow(request.userExamId);
 
-    const { totalScore, userScore } =
-      await this.answerService.getScoresByUserExam(userExam);
+    const results = await this.answerService.getScoresByUserExam(userExam);
 
-    return { totalScore, userScore };
-  }
-
-  private async findUserExamByIdOrElseThrow(userExamId: number) {
-    const userExam = await this.userExamRepository.findById(userExamId);
-
-    if (!userExam) {
-      throw new BadRequestException('해당 시험이 존재하지 않습니다.');
-    }
-
-    return userExam;
+    return CommonResponse.of(results, true, ResponseCode.OK);
   }
 }
