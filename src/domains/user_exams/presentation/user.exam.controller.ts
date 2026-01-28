@@ -3,6 +3,8 @@ import { JwtAuthGuard } from '../../../commons/guard/jwt.auth.guard';
 import { StartUserExamRequest } from '../application/dto/start.user.exam.request';
 import { UserExamService } from '../application/user.exam.service';
 import { AnswerQuestionRequest } from '../application/dto/answer.question.request';
+import { TokenUserInterface } from '../../../commons/decorators/token.user.interface';
+import { TokenUser } from 'src/commons/decorators/token.user';
 
 @Controller('user-exam')
 export class UserExamController {
@@ -10,19 +12,28 @@ export class UserExamController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  public async startUserExam(@Body() request: StartUserExamRequest) {
-    return await this.userExamService.startExam('', request); // TODO userId CurrentUser 변환 필요
+  public async startUserExam(
+    @TokenUser() user: TokenUserInterface,
+    @Body() request: StartUserExamRequest,
+  ) {
+    return await this.userExamService.startExam(user.userId, request);
   }
 
   @Post('/:userExamId/answer')
   @UseGuards(JwtAuthGuard)
-  public async answerUserExam(@Body() request: AnswerQuestionRequest) {
-    return await this.userExamService.answerQuestion('', request); // TODO userId CurrentUser 변환 필요
+  public async answerUserExam(
+    @TokenUser() user: TokenUserInterface,
+    @Body() request: AnswerQuestionRequest,
+  ) {
+    return await this.userExamService.answerQuestion(user.userId, request);
   }
 
   @Get('/:userExamId')
   @UseGuards(JwtAuthGuard)
-  public async getUserExamResult(@Body() request: AnswerQuestionRequest) {
-    return await this.userExamService.getUserExamResult('', request); // TODO userId CurrentUser 변환 필요
+  public async getUserExamResult(
+    @TokenUser() user: TokenUserInterface,
+    @Body() request: AnswerQuestionRequest,
+  ) {
+    return await this.userExamService.getUserExamResult(user.userId, request);
   }
 }
