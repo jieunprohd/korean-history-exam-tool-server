@@ -3,20 +3,18 @@ import { UserExamRepository } from './user.exam.repository';
 import { StartUserExamRequest } from './dto/start.user.exam.request';
 import { UserExam } from '../../../entities/user.exam';
 import { AnswerQuestionRequest } from './dto/answer.question.request';
-import { AnswerRepository } from '../../answers/application/answer.repository';
 import { GetUserExamResultRequest } from './dto/get.user.exam.result.request';
-import { UserAnswerRepository } from './user.answer.repository';
 import { UserAnswer } from '../../../entities/user.answer';
 import { AuthService } from '../../auth/application/auth.service';
 import { ExamService } from '../../exams/application/exam.service';
+import { AnswerService } from '../../answers/application/answer.service';
 
 @Injectable()
 export class UserExamService {
   constructor(
     private readonly userExamRepository: UserExamRepository,
     private readonly examService: ExamService,
-    private readonly answerRepository: AnswerRepository,
-    private readonly userAnswerRepository: UserAnswerRepository,
+    private readonly answerService: AnswerService,
     private readonly authService: AuthService,
   ) {}
 
@@ -62,19 +60,8 @@ export class UserExamService {
 
     const userExam = await this.findUserExamByIdOrElseThrow(request.userExamId);
 
-    const userAnswers =
-      await this.userAnswerRepository.findByUserExam(userExam);
-
-    const totalScore = userAnswers
-      .map((userAnswer) => userAnswer.answer)
-      .reduce((a, c) => a + c.score, 0);
-
-    const userScore = userAnswers
-      .filter(
-        (userAnswer) => userAnswer.userAnswer === userAnswer.answer.answer,
-      )
-      .map((userAnswer) => userAnswer.answer)
-      .reduce((a, c) => a + c.score, 0);
+    const { totalScore, userScore } =
+      await this.answerService.getScoresByUserExam(userExam);
 
     return { totalScore, userScore };
   }

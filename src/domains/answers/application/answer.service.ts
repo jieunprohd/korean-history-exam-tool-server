@@ -4,16 +4,37 @@ import { ExamSetRepository } from './exam.set.repository';
 import { AnswerRepository } from './answer.repository';
 import { ExamSet } from '../../../entities/exam.set';
 import { Answer } from '../../../entities/answer';
+import { UserExam } from '../../../entities/user.exam';
+import { UserAnswerRepository } from './user.answer.repository';
 
 @Injectable()
 export class AnswerService {
   constructor(
     private readonly examSetRepository: ExamSetRepository,
     private readonly answerRepository: AnswerRepository,
+    private readonly userAnswerRepository: UserAnswerRepository,
   ) {}
 
   public async analyzeAnswersByPdf(file: Express.Multer.File) {
     return await this.findExamSetOrElseCreate(file);
+  }
+
+  public async getScoresByUserExam(userExam: UserExam) {
+    const userAnswers =
+      await this.userAnswerRepository.findByUserExam(userExam);
+
+    const totalScore = userAnswers
+      .map((userAnswer) => userAnswer.answer)
+      .reduce((a, c) => a + c.score, 0);
+
+    const userScore = userAnswers
+      .filter(
+        (userAnswer) => userAnswer.userAnswer === userAnswer.answer.answer,
+      )
+      .map((userAnswer) => userAnswer.answer)
+      .reduce((a, c) => a + c.score, 0);
+
+    return { totalScore, userScore };
   }
 
   private async findExamSetOrElseCreate(file: Express.Multer.File) {
