@@ -66,11 +66,13 @@ export class AnswerService {
   }
 
   private async findExamSetOrElseCreate(file: Express.Multer.File) {
-    const examSet = await this.examSetRepository.findByName(file.originalname);
+    const examSet = await this.examSetRepository.findByName(
+      this.getFileNameWithoutExtension(file.originalname),
+    );
 
     if (!examSet) {
       const savedExamSet = await this.examSetRepository.save(
-        new ExamSet(file.originalname),
+        new ExamSet(this.getFileNameWithoutExtension(file.originalname)),
       );
       await this.getExtractedQuestions(file, savedExamSet);
 
@@ -78,6 +80,10 @@ export class AnswerService {
     }
 
     return examSet;
+  }
+
+  private getFileNameWithoutExtension(fileName: string) {
+    return fileName.split('.')[0];
   }
 
   private async getExtractedQuestions(
