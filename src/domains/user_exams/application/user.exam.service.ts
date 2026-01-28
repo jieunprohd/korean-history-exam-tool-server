@@ -2,19 +2,19 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserExamRepository } from './user.exam.repository';
 import { StartUserExamRequest } from './dto/start.user.exam.request';
 import { UserExam } from '../../../entities/user.exam';
-import { ExamSetRepository } from '../../answers/application/exam.set.repository';
 import { AnswerQuestionRequest } from './dto/answer.question.request';
 import { AnswerRepository } from '../../answers/application/answer.repository';
 import { GetUserExamResultRequest } from './dto/get.user.exam.result.request';
 import { UserAnswerRepository } from './user.answer.repository';
 import { UserAnswer } from '../../../entities/user.answer';
 import { AuthService } from '../../auth/application/auth.service';
+import { ExamService } from '../../exams/application/exam.service';
 
 @Injectable()
 export class UserExamService {
   constructor(
     private readonly userExamRepository: UserExamRepository,
-    private readonly examSetRepository: ExamSetRepository,
+    private readonly examService: ExamService,
     private readonly answerRepository: AnswerRepository,
     private readonly userAnswerRepository: UserAnswerRepository,
     private readonly authService: AuthService,
@@ -23,11 +23,7 @@ export class UserExamService {
   public async startExam(userId: string, request: StartUserExamRequest) {
     const user = await this.authService.findUserByUserIdOrElseThrow(userId);
 
-    const examSet = await this.examSetRepository.findById(request.examSetId);
-
-    if (!examSet) {
-      throw new BadRequestException('시험이 존재하지 않습니다.');
-    }
+    const examSet = await this.examService.findExamSetById(request.examSetId);
 
     const userExam = await this.userExamRepository.save(
       UserExam.from(examSet, user),
