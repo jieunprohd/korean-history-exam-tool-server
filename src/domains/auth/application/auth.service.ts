@@ -10,6 +10,9 @@ import { User } from '../../../entities/user';
 import { JwtService } from '@nestjs/jwt';
 import { LoginUserRequest } from './dto/login.user.request';
 import { AccessTokenPayload } from '../../../commons/decorators/token.payload';
+import { CommonResponse } from '../../../commons/response/common.response';
+import { CreateUserResponse } from './dto/create.user.response';
+import { ResponseCode } from '../../../commons/constants/response.code';
 
 @Injectable()
 export class AuthService {
@@ -31,7 +34,12 @@ export class AuthService {
     );
 
     const accessToken = await this.createUserToken(user);
-    return accessToken; // TODO CommonResponse 형태 변경 필요
+
+    return CommonResponse.of(
+      new CreateUserResponse(user.id, accessToken),
+      true,
+      ResponseCode.CREATED,
+    );
   }
 
   public async loginUser(request: LoginUserRequest) {
@@ -51,7 +59,12 @@ export class AuthService {
     }
 
     const accessToken = await this.createUserToken(user);
-    return accessToken;
+
+    return CommonResponse.of(
+      new CreateUserResponse(user.id, accessToken),
+      true,
+      ResponseCode.OK,
+    );
   }
 
   public async findUserById(userId: string) {
