@@ -4,7 +4,6 @@ import { StartUserExamRequest } from './dto/start.user.exam.request';
 import { UserExam } from '../../../entities/user.exam';
 import { AnswerQuestionRequest } from './dto/answer.question.request';
 import { GetUserExamResultRequest } from './dto/get.user.exam.result.request';
-import { UserAnswer } from '../../../entities/user.answer';
 import { AuthService } from '../../auth/application/auth.service';
 import { ExamService } from '../../exams/application/exam.service';
 import { AnswerService } from '../../answers/application/answer.service';
@@ -35,14 +34,15 @@ export class UserExamService {
 
     const userExam = await this.findUserExamByIdOrElseThrow(request.userExamId);
 
-    const rightAnswer =
-      await this.answerRepository.findByExamSetAndQuestionNumber(
-        userExam.examSet,
-        request.questionNumber,
-      );
+    const rightAnswer = await this.answerService.getRightAnswersByUserExam(
+      userExam,
+      request.questionNumber,
+    );
 
-    await this.userAnswerRepository.save(
-      UserAnswer.from(request.answer, userExam, rightAnswer),
+    await this.answerService.saveUserAnswerByUserExam(
+      request.answer,
+      userExam,
+      rightAnswer,
     );
 
     if (rightAnswer.answer === request.answer) {

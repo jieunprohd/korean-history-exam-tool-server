@@ -6,6 +6,7 @@ import { ExamSet } from '../../../entities/exam.set';
 import { Answer } from '../../../entities/answer';
 import { UserExam } from '../../../entities/user.exam';
 import { UserAnswerRepository } from './user.answer.repository';
+import { UserAnswer } from '../../../entities/user.answer';
 
 @Injectable()
 export class AnswerService {
@@ -35,6 +36,26 @@ export class AnswerService {
       .reduce((a, c) => a + c.score, 0);
 
     return { totalScore, userScore };
+  }
+
+  public async getRightAnswersByUserExam(
+    userExam: UserExam,
+    questionNumber: number,
+  ) {
+    return await this.answerRepository.findByExamSetAndQuestionNumber(
+      userExam.examSet,
+      questionNumber,
+    );
+  }
+
+  public async saveUserAnswerByUserExam(
+    answer: number,
+    userExam: UserExam,
+    rightAnswer: Answer,
+  ) {
+    return await this.userAnswerRepository.save(
+      UserAnswer.from(answer, userExam, rightAnswer),
+    );
   }
 
   private async findExamSetOrElseCreate(file: Express.Multer.File) {
