@@ -5,6 +5,8 @@ import { GetExamSetResponse } from './dto/get.exam.set.response';
 import { ResponseCode } from '../../../commons/constants/response.code';
 import { PdfsService } from '../../pdfs/application/pdfs.service';
 import { PdfType } from '../../../entities/pdf.uploads';
+import { ExamSet } from '../../../entities/exam.set';
+import { UploadExamSetResponse } from './dto/upload.exam.set.response';
 
 @Injectable()
 export class ExamService {
@@ -14,7 +16,19 @@ export class ExamService {
   ) {}
 
   public async uploadExamPdf(file: Express.Multer.File, userId: string) {
-    return await this.pdfsService.uploadPdf(file, userId, PdfType.QUESTION);
+    const examSet = await this.findExamSetOrElseCreate(file);
+
+    const pdfUpload = await this.pdfsService.uploadPdf(
+      file,
+      userId,
+      PdfType.QUESTION,
+    );
+
+    return CommonResponse.of(
+      UploadExamSetResponse.from(examSet, pdfUpload.filePath),
+      true,
+      ResponseCode.CREATED,
+    );
   }
 
   public async findAllExamSets() {
@@ -43,5 +57,25 @@ export class ExamService {
     }
 
     return examSet;
+  }
+
+  private async findExamSetOrElseCreate(file: Express.Multer.File) {
+    const examSet = await this.examSetRepository.findByName(
+      this.getFileNameWithoutExtension(file.originalname),
+    );
+
+    if (!examSet) {
+      const savedExamSet = await this.examSetRepository.save(
+        new ExamSet(this.getFileNameWithoutExtension(file.originalname)),
+      );
+
+      return await this.examSetRepository.findById(savedExamSet.id);
+    }
+
+    return examSet;
+  }
+
+  private getFileNameWithoutExtension(fileName: string) {
+    return fileName.split('.')[0];
   }
 }
