@@ -2,32 +2,26 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserExamRepository } from './user.exam.repository';
 import { StartUserExamRequest } from './dto/start.user.exam.request';
 import { UserExam } from '../../../entities/user.exam';
-import { UserRepository } from '../../auth/application/user.repository';
 import { ExamSetRepository } from '../../answers/application/exam.set.repository';
 import { AnswerQuestionRequest } from './dto/answer.question.request';
 import { AnswerRepository } from '../../answers/application/answer.repository';
 import { GetUserExamResultRequest } from './dto/get.user.exam.result.request';
 import { UserAnswerRepository } from './user.answer.repository';
 import { UserAnswer } from '../../../entities/user.answer';
+import { AuthService } from '../../auth/application/auth.service';
 
 @Injectable()
 export class UserExamService {
-  ㅔ;
-
   constructor(
     private readonly userExamRepository: UserExamRepository,
-    private readonly userRepository: UserRepository,
     private readonly examSetRepository: ExamSetRepository,
     private readonly answerRepository: AnswerRepository,
     private readonly userAnswerRepository: UserAnswerRepository,
+    private readonly authService: AuthService,
   ) {}
 
   public async startExam(userId: string, request: StartUserExamRequest) {
-    const user = await this.userRepository.findByUserId(userId);
-
-    if (!user) {
-      throw new BadRequestException('사용자가 존재하지 않습니다.');
-    }
+    const user = await this.authService.findUserByUserIdOrElseThrow(userId);
 
     const examSet = await this.examSetRepository.findById(request.examSetId);
 
@@ -43,11 +37,7 @@ export class UserExamService {
   }
 
   public async answerQuestion(userId: string, request: AnswerQuestionRequest) {
-    const user = await this.userRepository.findByUserId(userId);
-
-    if (!user) {
-      throw new BadRequestException('사용자가 존재하지 않습니다.');
-    }
+    await this.authService.findUserByUserIdOrElseThrow(userId);
 
     const userExam = await this.userExamRepository.findById(request.userExamId);
 
@@ -76,11 +66,7 @@ export class UserExamService {
     userId: string,
     request: GetUserExamResultRequest,
   ) {
-    const user = await this.userRepository.findByUserId(userId);
-
-    if (!user) {
-      throw new BadRequestException('사용자가 존재하지 않습니다.');
-    }
+    await this.authService.findUserByUserIdOrElseThrow(userId);
 
     const userExam = await this.userExamRepository.findById(request.userExamId);
 

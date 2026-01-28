@@ -8,8 +8,8 @@ import { UserRepository } from './user.repository';
 import * as bcrypt from 'bcrypt';
 import { User } from '../../../entities/user';
 import { JwtService } from '@nestjs/jwt';
-import { AccessTokenPayload } from '../../answers/application/token.payload';
 import { LoginUserRequest } from './dto/login.user.request';
+import { AccessTokenPayload } from '../../../commons/decorators/token.payload';
 
 @Injectable()
 export class AuthService {
@@ -59,6 +59,16 @@ export class AuthService {
 
     if (!user) {
       throw new NotFoundException('해당 사용자가 존재하지 않습니다.');
+    }
+
+    return user;
+  }
+
+  public async findUserByUserIdOrElseThrow(userId: string) {
+    const user = await this.userRepository.findByUserId(userId);
+
+    if (!user) {
+      throw new NotFoundException('사용자가 존재하지 않습니다.');
     }
 
     return user;
