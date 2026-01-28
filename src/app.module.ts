@@ -8,9 +8,14 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './commons/guard/jwt.auth.guard';
 import { ExamModule } from './domains/exams/exam.module';
 import { UserExamModule } from './domains/user_exams/user.exam.module';
+import { ConfigModule } from '@nestjs/config';
+import { PdfsModule } from './domains/pdfs/pdfs.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: '127.0.0.1',
@@ -25,6 +30,7 @@ import { UserExamModule } from './domains/user_exams/user.exam.module';
     AuthModule,
     ExamModule,
     UserExamModule,
+    PdfsModule,
   ],
   controllers: [AppController],
   providers: [

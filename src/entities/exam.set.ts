@@ -29,7 +29,9 @@ export class ExamSet {
     this.name = this.getFileName(fileOriginalName);
   }
 
-  private getFileName(fileOriginalName: string): string {
-    return fileOriginalName.split('.').pop();
+  private getFileName(fileOriginalName: string) {
+    const split = fileOriginalName?.split('.');
+    split?.pop();
+    return split?.join('.');
   }
 }

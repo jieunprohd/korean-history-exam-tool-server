@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { AuthController } from './presentation/auth.controller';
 import { AuthService } from './application/auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -9,6 +9,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from '../../commons/guard/jwt.strategy';
 import { JwtAuthGuard } from '../../commons/guard/jwt.auth.guard';
 
+@Global()
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),

@@ -23,7 +23,9 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.975.0",
     "@nestjs/common": "^10.4.22",
+    "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^10.4.22",
     "@nestjs/jwt": "^11.0.2",
     "@nestjs/passport": "^11.0.5",
@@ -36,13 +38,13 @@
     "express": "^5.2.1",
     "mysql2": "^3.16.1",
     "openai": "^6.16.0",
+    "passport-jwt": "^4.0.0",
     "pdf-lib": "^1.17.1",
     "pdf-parse-new": "^2.0.0",
     "pdf2array": "^0.0.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
-    "typeorm": "^0.3.28",
-    "passport-jwt": "^4.0.0"
+    "typeorm": "^0.3.28"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.4.9",

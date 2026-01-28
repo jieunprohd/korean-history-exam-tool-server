@@ -24,7 +24,9 @@ export class UserExamService {
   public async startExam(userId: string, request: StartUserExamRequest) {
     const user = await this.authService.findUserByUserIdOrElseThrow(userId);
 
-    const examSet = await this.examService.findExamSetById(request.examSetId);
+    const examSet = await this.examService.findExamSetByExamSetId(
+      request.examSetId,
+    );
 
     const userExam = await this.userExamRepository.save(
       UserExam.from(examSet, user),

@@ -12,7 +12,7 @@ import { FileValidation } from '../../utils/file.validation';
 export class PdfFileInterceptor implements NestInterceptor {
   private readonly allowedExtensions = ['pdf'];
   private readonly allowedMimeTypes = ['application/pdf'];
-  private readonly maxFileSize = 10 * 1024 * 1024;
+  private readonly maxFileSize = 30 * 1024 * 1024;
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const fileFilter = FileValidation.validateFile(

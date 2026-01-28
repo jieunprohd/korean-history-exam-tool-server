@@ -1,6 +1,17 @@
-import { Controller, Get, Param, Post, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { PdfFileInterceptor } from '../../../commons/interceptors/pdf.file.interceptor';
 import { ExamService } from '../application/exam.service';
+import { JwtAuthGuard } from '../../../commons/guard/jwt.auth.guard';
+import { TokenUser } from '../../../commons/decorators/token.user';
+import { TokenUserInterface } from '../../../commons/decorators/token.user.interface';
 
 @Controller('exams')
 export class ExamController {
@@ -17,9 +28,12 @@ export class ExamController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(PdfFileInterceptor)
-  public async uploadExamPdf() {
-    // 시험 문제집 파일 업로드
-    // pdf
+  public async uploadExamPdf(
+    @TokenUser() user: TokenUserInterface,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return await this.examService.uploadExamPdf(file, user.userId);
   }
 }

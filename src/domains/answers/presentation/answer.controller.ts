@@ -2,20 +2,26 @@ import {
   Controller,
   Post,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { PdfFileInterceptor } from '../../../commons/interceptors/pdf.file.interceptor';
 import { AnswerService } from '../application/answer.service';
-import { Public } from '../../../commons/decorators/public.decorator';
+import { JwtAuthGuard } from '../../../commons/guard/jwt.auth.guard';
+import { TokenUser } from '../../../commons/decorators/token.user';
+import { TokenUserInterface } from '../../../commons/decorators/token.user.interface';
 
-@Controller('files')
+@Controller('answers')
 export class AnswerController {
   constructor(private readonly fileService: AnswerService) {}
 
-  @Public()
   @Post()
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(PdfFileInterceptor)
-  public async analyzeAnswer(@UploadedFile() file: Express.Multer.File) {
-    return await this.fileService.analyzeAnswersByPdf(file);
+  public async analyzeAnswer(
+    @TokenUser() user: TokenUserInterface,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return await this.fileService.analyzeAnswersByPdf(file, user);
   }
 }

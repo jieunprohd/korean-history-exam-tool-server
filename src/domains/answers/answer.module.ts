@@ -2,18 +2,18 @@ import { Module } from '@nestjs/common';
 import { AnswerController } from './presentation/answer.controller';
 import { AnswerService } from './application/answer.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ExamSet } from '../../entities/exam.set';
 import { ExamSetRepository } from './application/exam.set.repository';
 import { AnswerRepository } from './application/answer.repository';
-import { ExamSet } from '../../entities/exam.set';
 import { Answer } from '../../entities/answer';
-import { AuthModule } from '../auth/auth.module';
 import { UserAnswer } from '../../entities/user.answer';
 import { UserAnswerRepository } from './application/user.answer.repository';
+import { PdfsModule } from '../pdfs/pdfs.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([ExamSet, Answer, UserAnswer]),
-    AuthModule,
+    PdfsModule,
   ],
   controllers: [AnswerController],
   providers: [
@@ -22,11 +22,6 @@ import { UserAnswerRepository } from './application/user.answer.repository';
     AnswerRepository,
     UserAnswerRepository,
   ],
-  exports: [
-    AnswerService,
-    ExamSetRepository,
-    AnswerRepository,
-    UserAnswerRepository,
-  ],
+  exports: [AnswerService, AnswerRepository],
 })
 export class AnswerModule {}

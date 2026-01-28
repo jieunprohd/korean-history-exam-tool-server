@@ -11,6 +11,9 @@ import { GetExamResultResponse } from './dto/get.exam.result.response';
 import { CommonResponse } from '../../../commons/response/common.response';
 import { GetAnalyzeAnswerResponse } from './dto/get.analyze.answer.response';
 import { ResponseCode } from '../../../commons/constants/response.code';
+import { PdfsService } from '../../pdfs/application/pdfs.service';
+import { PdfType } from '../../../entities/pdf.uploads';
+import { TokenUserInterface } from '../../../commons/decorators/token.user.interface';
 
 @Injectable()
 export class AnswerService {
@@ -18,9 +21,14 @@ export class AnswerService {
     private readonly examSetRepository: ExamSetRepository,
     private readonly answerRepository: AnswerRepository,
     private readonly userAnswerRepository: UserAnswerRepository,
+    private readonly pdfsService: PdfsService,
   ) {}
 
-  public async analyzeAnswersByPdf(file: Express.Multer.File) {
+  public async analyzeAnswersByPdf(
+    file: Express.Multer.File,
+    user: TokenUserInterface,
+  ) {
+    await this.pdfsService.uploadPdf(file, user.userId, PdfType.ANSWER);
     const examSet = await this.findExamSetOrElseCreate(file);
 
     return CommonResponse.of(
