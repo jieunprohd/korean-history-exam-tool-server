@@ -8,7 +8,8 @@ export class StartUserExamResponse {
   public static from(userExam: UserExam) {
     const response = new StartUserExamResponse();
     response.userExamId = userExam.id;
-    response.examSetId = userExam.examSet;
+    response.examSetId = userExam.examSet.id;
     response.startAt = userExam.createdAt;
+    return response;
   }
 }

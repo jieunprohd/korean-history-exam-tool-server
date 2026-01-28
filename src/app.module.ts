@@ -7,6 +7,7 @@ import { AuthModule } from './domains/auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './commons/guard/jwt.auth.guard';
 import { ExamModule } from './domains/exams/exam.module';
+import { UserExamModule } from './domains/user_exams/user.exam.module';
 
 @Module({
   imports: [
@@ -19,11 +20,11 @@ import { ExamModule } from './domains/exams/exam.module';
       database: 'korean_history',
       autoLoadEntities: true,
       synchronize: true,
-      entities: [__dirname + '/src/entities/*.ts'],
     }),
     AnswerModule,
     AuthModule,
     ExamModule,
+    UserExamModule,
   ],
   controllers: [AppController],
   providers: [
