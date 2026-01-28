@@ -35,11 +35,7 @@ export class UserExamService {
   public async answerQuestion(userId: string, request: AnswerQuestionRequest) {
     await this.authService.findUserByUserIdOrElseThrow(userId);
 
-    const userExam = await this.userExamRepository.findById(request.userExamId);
-
-    if (!userExam) {
-      throw new BadRequestException('해당 시험이 존재하지 않습니다.');
-    }
+    const userExam = await this.findUserExamByIdOrElseThrow(request.userExamId);
 
     const rightAnswer =
       await this.answerRepository.findByExamSetAndQuestionNumber(
@@ -64,11 +60,7 @@ export class UserExamService {
   ) {
     await this.authService.findUserByUserIdOrElseThrow(userId);
 
-    const userExam = await this.userExamRepository.findById(request.userExamId);
-
-    if (!userExam) {
-      throw new BadRequestException('해당 시험이 존재하지 않습니다.');
-    }
+    const userExam = await this.findUserExamByIdOrElseThrow(request.userExamId);
 
     const userAnswers =
       await this.userAnswerRepository.findByUserExam(userExam);
@@ -85,5 +77,15 @@ export class UserExamService {
       .reduce((a, c) => a + c.score, 0);
 
     return { totalScore, userScore };
+  }
+
+  private async findUserExamByIdOrElseThrow(userExamId: number) {
+    const userExam = await this.userExamRepository.findById(userExamId);
+
+    if (!userExam) {
+      throw new BadRequestException('해당 시험이 존재하지 않습니다.');
+    }
+
+    return userExam;
   }
 }
