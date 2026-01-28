@@ -1,5 +1,8 @@
 import { ExamSetRepository } from '../../answers/application/exam.set.repository';
 import { Injectable } from '@nestjs/common';
+import { CommonResponse } from '../../../commons/response/common.response';
+import { GetExamSetResponse } from './dto/get.exam.set.response';
+import { ResponseCode } from '../../../commons/constants/response.code';
 
 @Injectable()
 export class ExamService {
@@ -16,6 +19,10 @@ export class ExamService {
       throw new Error('해당하는 시험이 존재하지 않습니다.');
     }
 
-    return examSet;
+    return CommonResponse.of(
+      GetExamSetResponse.from(examSet),
+      true,
+      ResponseCode.OK,
+    );
   }
 }
