@@ -24,4 +24,12 @@ export class ExamSet {
 
   @OneToMany(() => UserExam, (userExam) => userExam.examSet)
   userExams: UserExam[];
+
+  constructor(fileOriginalName: string) {
+    this.name = this.getFileName(fileOriginalName);
+  }
+
+  private getFileName(fileOriginalName: string): string {
+    return fileOriginalName.split('.').pop();
+  }
 }

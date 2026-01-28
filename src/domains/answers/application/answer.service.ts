@@ -8,6 +8,9 @@ import { UserExam } from '../../../entities/user.exam';
 import { UserAnswerRepository } from './user.answer.repository';
 import { UserAnswer } from '../../../entities/user.answer';
 import { GetExamResultResponse } from './dto/get.exam.result.response';
+import { CommonResponse } from '../../../commons/response/common.response';
+import { GetAnalyzeAnswerResponse } from './dto/get.analyze.answer.response';
+import { ResponseCode } from '../../../commons/constants/response.code';
 
 @Injectable()
 export class AnswerService {
@@ -18,7 +21,13 @@ export class AnswerService {
   ) {}
 
   public async analyzeAnswersByPdf(file: Express.Multer.File) {
-    return await this.findExamSetOrElseCreate(file);
+    const examSet = await this.findExamSetOrElseCreate(file);
+
+    return CommonResponse.of(
+      GetAnalyzeAnswerResponse.from(examSet),
+      true,
+      ResponseCode.CREATED,
+    );
   }
 
   public async getScoresByUserExam(userExam: UserExam) {
@@ -52,12 +61,11 @@ export class AnswerService {
     const examSet = await this.examSetRepository.findByName(file.originalname);
 
     if (!examSet) {
-      const newExamSet = new ExamSet();
-      newExamSet.name = file.originalname;
+      const newExamSet = new ExamSet(file.originalname);
 
       const savedExamSet = await this.examSetRepository.save(newExamSet);
 
-      return await this.getExtractedQuestions(file, savedExamSet);
+      await this.getExtractedQuestions(file, savedExamSet);
     }
 
     return examSet;
