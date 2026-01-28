@@ -69,11 +69,12 @@ export class AnswerService {
     const examSet = await this.examSetRepository.findByName(file.originalname);
 
     if (!examSet) {
-      const newExamSet = new ExamSet(file.originalname);
-
-      const savedExamSet = await this.examSetRepository.save(newExamSet);
-
+      const savedExamSet = await this.examSetRepository.save(
+        new ExamSet(file.originalname),
+      );
       await this.getExtractedQuestions(file, savedExamSet);
+
+      return await this.examSetRepository.findById(savedExamSet.id);
     }
 
     return examSet;
@@ -88,6 +89,7 @@ export class AnswerService {
   }
 
   private async extractQuestions(data: string[][], examSet: ExamSet) {
+    console.log(data, examSet);
     const questionRows = data.slice(4, 14);
 
     for (const row of questionRows) {
