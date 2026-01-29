@@ -87,6 +87,10 @@ export class AuthService {
     return user;
   }
 
+  public async getAllByUserId(userId: string) {
+    return await this.userRepository.findByUserIdWithRelations(userId);
+  }
+
   private async createUserToken(user: User) {
     const payload: AccessTokenPayload = {
       userId: user.id.toString(),

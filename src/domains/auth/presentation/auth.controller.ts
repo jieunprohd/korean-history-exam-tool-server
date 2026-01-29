@@ -4,6 +4,8 @@ import { AuthService } from '../application/auth.service';
 import { LoginUserRequest } from '../application/dto/login.user.request';
 import { JwtAuthGuard } from '../../../commons/guard/jwt.auth.guard';
 import { Public } from '../../../commons/decorators/public.decorator';
+import { TokenUser } from '../../../commons/decorators/token.user';
+import { TokenUserInterface } from '../../../commons/decorators/token.user.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -23,5 +25,7 @@ export class AuthController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  public async getUserByToken() {}
+  public async getUserByToken(@TokenUser() user: TokenUserInterface) {
+    return await this.authService.getAllByUserId(user.userId);
+  }
 }

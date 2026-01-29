@@ -21,4 +21,16 @@ export class UserRepository {
   public async findByUserId(userId: string) {
     return await this.repo.findOne({ where: { id: Number(userId) } });
   }
+
+  public async findByUserIdWithRelations(userId: string) {
+    return await this.repo.findOne({
+      where: { id: Number(userId) },
+      relations: [
+        'userExams',
+        'userExams.examSet',
+        'userExams.userAnswers',
+        'userExams.userAnswers.answer',
+      ],
+    });
+  }
 }
