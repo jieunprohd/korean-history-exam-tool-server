@@ -17,7 +17,7 @@ export class UserAnswerRepository {
   public async findByUserExam(userExam: UserExam) {
     return await this.repo.find({
       where: { userExam },
-      relations: ['userAnswers'],
+      relations: ['answer'],
     });
   }
 }
