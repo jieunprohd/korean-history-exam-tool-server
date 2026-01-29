@@ -3,10 +3,6 @@ import { IsNotEmpty, IsNumber } from 'class-validator';
 export class AnswerQuestionRequest {
   @IsNumber()
   @IsNotEmpty()
-  userExamId: number;
-
-  @IsNumber()
-  @IsNotEmpty()
   questionNumber: number;
 
   @IsNumber()

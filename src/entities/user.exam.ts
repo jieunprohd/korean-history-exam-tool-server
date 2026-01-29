@@ -45,6 +45,26 @@ export class UserExam {
     response.examSet = examSet;
     response.user = user;
     response.totalScore = 0;
+    response.status = UserExamStatusType.STARTED;
+    response.createdAt = new Date();
     return response;
+  }
+
+  public updateUserExamToFinished() {
+    this.setStatus(UserExamStatusType.FINISHED);
+    this.setFinishedAt();
+    return this;
+  }
+
+  public isFinishedUserExam() {
+    return !!this.finishedAt && this.status === UserExamStatusType.FINISHED;
+  }
+
+  private setStatus(status: UserExamStatusType) {
+    this.status = status;
+  }
+
+  private setFinishedAt() {
+    this.finishedAt = new Date();
   }
 }

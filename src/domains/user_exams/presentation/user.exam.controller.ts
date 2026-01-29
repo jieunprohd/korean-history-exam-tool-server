@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../../../commons/guard/jwt.auth.guard';
 import { StartUserExamRequest } from '../application/dto/start.user.exam.request';
 import { UserExamService } from '../application/user.exam.service';
 import { AnswerQuestionRequest } from '../application/dto/answer.question.request';
 import { TokenUserInterface } from '../../../commons/decorators/token.user.interface';
 import { TokenUser } from 'src/commons/decorators/token.user';
+import { GetUserExamResultRequest } from '../application/dto/get.user.exam.result.request';
 
 @Controller('user-exam')
 export class UserExamController {
@@ -23,16 +24,21 @@ export class UserExamController {
   @UseGuards(JwtAuthGuard)
   public async answerUserExam(
     @TokenUser() user: TokenUserInterface,
+    @Param('userExamId') userExamId: number,
     @Body() request: AnswerQuestionRequest,
   ) {
-    return await this.userExamService.answerQuestion(user.userId, request);
+    return await this.userExamService.answerQuestion(
+      user.userId,
+      userExamId,
+      request,
+    );
   }
 
   @Get('/:userExamId')
   @UseGuards(JwtAuthGuard)
   public async getUserExamResult(
     @TokenUser() user: TokenUserInterface,
-    @Body() request: AnswerQuestionRequest,
+    @Body() request: GetUserExamResultRequest,
   ) {
     return await this.userExamService.getUserExamResult(user.userId, request);
   }

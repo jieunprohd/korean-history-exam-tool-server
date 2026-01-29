@@ -39,14 +39,16 @@ export class UserExamService {
     );
   }
 
-  public async answerQuestion(userId: string, request: AnswerQuestionRequest) {
+  public async answerQuestion(
+    userId: string,
+    userExamId: number,
+    request: AnswerQuestionRequest,
+  ) {
     await this.authService.findUserByUserIdOrElseThrow(userId);
 
-    const userExam = await this.findUserExamByIdOrElseThrow(request.userExamId);
-
-    const rightAnswer = await this.answerService.getRightAnswersByUserExam(
-      userExam,
-      request.questionNumber,
+    const userExam = await this.findUserExamByIdOrElseThrow(userExamId);
+    const rightAnswer = userExam.examSet.answers.find(
+      (answer) => answer.questionNumber === request.questionNumber,
     );
 
     await this.answerService.saveUserAnswerByUserExam(
@@ -69,6 +71,12 @@ export class UserExamService {
     await this.authService.findUserByUserIdOrElseThrow(userId);
 
     const userExam = await this.findUserExamByIdOrElseThrow(request.userExamId);
+
+    if (userExam.isFinishedUserExam()) {
+      throw new BadRequestException('이미 종료된 시험입니다.');
+    }
+
+    await this.userExamRepository.save(userExam.updateUserExamToFinished());
 
     const results = await this.answerService.getScoresByUserExam(userExam);
 

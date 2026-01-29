@@ -16,7 +16,7 @@ export class UserExamRepository {
   public async findById(userExamId: number) {
     return await this.repo.findOne({
       where: { id: userExamId },
-      relations: ['examSet'],
+      relations: ['examSet', 'examSet.answers'],
     });
   }
 }
