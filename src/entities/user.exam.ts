@@ -10,6 +10,7 @@ import {
 import { ExamSet } from './exam.set';
 import { User } from './user';
 import { UserAnswer } from './user.answer';
+import { UserExamStatusType } from '../commons/enum/user.exam.status.type';
 
 @Entity({ name: 'USER_EXAM' })
 export class UserExam {
@@ -19,8 +20,14 @@ export class UserExam {
   @Column({ name: 'TOTAL_SCORE' })
   totalScore: number;
 
+  @Column({ name: 'STATUS' })
+  status: UserExamStatusType;
+
   @CreateDateColumn({ name: 'CREATED_AT' })
   createdAt: Date;
+
+  @CreateDateColumn({ name: 'FINISHED_AT' })
+  finishedAt: Date;
 
   @ManyToOne(() => ExamSet, (examSet) => examSet.userExams)
   @JoinColumn({ name: 'EXAM_SET_ID' })
