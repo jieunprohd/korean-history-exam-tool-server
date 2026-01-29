@@ -65,6 +65,7 @@ export class ExamService {
     );
 
     if (!examSet) {
+      console.log(this.getFileNameWithoutExtension(file.originalname));
       const savedExamSet = await this.examSetRepository.save(
         new ExamSet(this.getFileNameWithoutExtension(file.originalname)),
       );
