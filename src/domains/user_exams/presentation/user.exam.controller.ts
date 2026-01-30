@@ -5,7 +5,6 @@ import { UserExamService } from '../application/user.exam.service';
 import { AnswerQuestionRequest } from '../application/dto/answer.question.request';
 import { TokenUserInterface } from '../../../commons/decorators/token.user.interface';
 import { TokenUser } from 'src/commons/decorators/token.user';
-import { GetUserExamResultRequest } from '../application/dto/get.user.exam.result.request';
 
 @Controller('user-exam')
 export class UserExamController {
@@ -38,8 +37,11 @@ export class UserExamController {
   @UseGuards(JwtAuthGuard)
   public async getUserExamResult(
     @TokenUser() user: TokenUserInterface,
-    @Body() request: GetUserExamResultRequest,
+    @Param('userExamId') userExamId: number,
   ) {
-    return await this.userExamService.getUserExamResult(user.userId, request);
+    return await this.userExamService.getUserExamResult(
+      user.userId,
+      userExamId,
+    );
   }
 }

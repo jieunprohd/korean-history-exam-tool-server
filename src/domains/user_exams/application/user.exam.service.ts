@@ -3,7 +3,6 @@ import { UserExamRepository } from './user.exam.repository';
 import { StartUserExamRequest } from './dto/start.user.exam.request';
 import { UserExam } from '../../../entities/user.exam';
 import { AnswerQuestionRequest } from './dto/answer.question.request';
-import { GetUserExamResultRequest } from './dto/get.user.exam.result.request';
 import { AuthService } from '../../auth/application/auth.service';
 import { ExamService } from '../../exams/application/exam.service';
 import { AnswerService } from '../../answers/application/answer.service';
@@ -11,6 +10,7 @@ import { CommonResponse } from '../../../commons/response/common.response';
 import { AnswerQuestionResponse } from './dto/answer.question.response';
 import { ResponseCode } from '../../../commons/constants/response.code';
 import { StartUserExamResponse } from './dto/start.user.exam.respose';
+import { GetExamResultResponse } from '../../answers/application/dto/get.exam.result.response';
 
 @Injectable()
 export class UserExamService {
@@ -64,23 +64,18 @@ export class UserExamService {
     );
   }
 
-  public async getUserExamResult(
-    userId: string,
-    request: GetUserExamResultRequest,
-  ) {
+  public async getUserExamResult(userId: string, userExamId: number) {
     await this.authService.findUserByUserIdOrElseThrow(userId);
 
-    const userExam = await this.findUserExamByIdOrElseThrow(request.userExamId);
-
-    if (userExam.isFinishedUserExam()) {
-      throw new BadRequestException('이미 종료된 시험입니다.');
-    }
+    const userExam = await this.findUserExamByIdOrElseThrow(userExamId);
 
     await this.userExamRepository.save(userExam.updateUserExamToFinished());
 
-    const results = await this.answerService.getScoresByUserExam(userExam);
-
-    return CommonResponse.of(results, true, ResponseCode.OK);
+    return CommonResponse.of(
+      GetExamResultResponse.from(userExam),
+      true,
+      ResponseCode.OK,
+    );
   }
 
   private async findUserExamByIdOrElseThrow(userExamId: number) {

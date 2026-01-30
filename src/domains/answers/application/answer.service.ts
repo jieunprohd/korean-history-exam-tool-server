@@ -39,20 +39,7 @@ export class AnswerService {
   }
 
   public async getScoresByUserExam(userExam: UserExam) {
-    const userAnswers =
-      await this.userAnswerRepository.findByUserExam(userExam);
-
-    return GetExamResultResponse.from(userAnswers);
-  }
-
-  public async getRightAnswersByUserExam(
-    userExam: UserExam,
-    questionNumber: number,
-  ) {
-    return await this.answerRepository.findByExamSetAndQuestionNumber(
-      userExam.examSet,
-      questionNumber,
-    );
+    return GetExamResultResponse.from(userExam);
   }
 
   public async saveUserAnswerByUserExam(
