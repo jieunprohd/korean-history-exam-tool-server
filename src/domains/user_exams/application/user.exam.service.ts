@@ -47,6 +47,11 @@ export class UserExamService {
     await this.authService.findUserByUserIdOrElseThrow(userId);
 
     const userExam = await this.findUserExamByIdOrElseThrow(userExamId);
+
+    if (userExam.isFinishedUserExam()) {
+      throw new BadRequestException('종료된 시험입니다.');
+    }
+
     const rightAnswer = userExam.examSet.answers.find(
       (answer) => answer.questionNumber === request.questionNumber,
     );
